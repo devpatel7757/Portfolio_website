@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Case Study — Chicago Crime Analysis | Devarshi Patel</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0A0A0F;
+  --surface: #12121A;
+  --card: #1A1A26;
+  --border: #2A2A3A;
+  --accent: #00D4FF;
+  --accent2: #FF6B6B;
+  --accent3: #2ECC71;
+  --text: #E8E8F0;
+  --muted: #8888AA;
+  --heading-font: 'DM Serif Display', serif;
+  --body-font: 'DM Sans', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: var(--body-font); font-size: 16px; line-height: 1.7; overflow-x: hidden; }
+
+/* NOISE TEXTURE */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0; opacity: 0.4;
+}
+
+/* HERO */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 80px 60px;
+  position: relative;
+  background: radial-gradient(ellipse at 20% 50%, rgba(0,212,255,0.08) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 20%, rgba(255,107,107,0.06) 0%, transparent 50%);
+}
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.3);
+  color: var(--accent); padding: 6px 16px; border-radius: 100px;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+  margin-bottom: 32px; width: fit-content;
+  animation: fadeUp 0.6s ease both;
+}
+.hero-tag::before { content: '●'; font-size: 8px; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.hero h1 {
+  font-family: var(--heading-font);
+  font-size: clamp(42px, 6vw, 80px);
+  line-height: 1.1;
+  color: var(--text);
+  max-width: 900px;
+  animation: fadeUp 0.6s 0.1s ease both;
+}
+.hero h1 em { color: var(--accent); font-style: italic; }
+.hero-sub {
+  font-size: 18px; color: var(--muted); max-width: 600px;
+  margin-top: 24px;
+  animation: fadeUp 0.6s 0.2s ease both;
+}
+.hero-meta {
+  display: flex; gap: 32px; margin-top: 48px; flex-wrap: wrap;
+  animation: fadeUp 0.6s 0.3s ease both;
+}
+.meta-item { display: flex; flex-direction: column; gap: 4px; }
+.meta-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+.meta-value { font-size: 15px; font-weight: 600; color: var(--text); }
+.hero-scroll {
+  position: absolute; bottom: 40px; left: 60px;
+  display: flex; align-items: center; gap: 12px;
+  color: var(--muted); font-size: 13px;
+  animation: fadeUp 0.6s 0.5s ease both;
+}
+.scroll-line { width: 40px; height: 1px; background: var(--muted); }
+
+/* STAT BAR */
+.stat-bar {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 40px 60px;
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+}
+.stat { text-align: center; }
+.stat-num {
+  font-family: var(--heading-font);
+  font-size: 36px; color: var(--accent);
+  display: block;
+}
+.stat-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+
+/* SECTIONS */
+.section { padding: 80px 60px; max-width: 1100px; margin: 0 auto; }
+.section-tag {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--accent);
+  margin-bottom: 16px; display: block;
+}
+.section h2 {
+  font-family: var(--heading-font);
+  font-size: clamp(28px, 4vw, 44px);
+  color: var(--text); margin-bottom: 24px; line-height: 1.2;
+}
+.section p { color: var(--muted); margin-bottom: 20px; font-size: 16px; max-width: 720px; }
+
+/* PROBLEM CARDS */
+.problem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 40px; }
+.problem-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 28px;
+  transition: border-color 0.3s, transform 0.3s;
+}
+.problem-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+.problem-icon { font-size: 28px; margin-bottom: 12px; }
+.problem-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; color: var(--text); }
+.problem-card p { font-size: 14px; color: var(--muted); margin: 0; }
+
+/* TIMELINE */
+.timeline { margin-top: 40px; position: relative; }
+.timeline::before {
+  content: ''; position: absolute; left: 20px; top: 0; bottom: 0;
+  width: 2px; background: linear-gradient(to bottom, var(--accent), var(--accent2), var(--accent3));
+  border-radius: 2px;
+}
+.timeline-item {
+  display: flex; gap: 32px; margin-bottom: 36px; padding-left: 60px; position: relative;
+}
+.timeline-dot {
+  position: absolute; left: 12px; top: 6px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--accent); border: 3px solid var(--bg);
+  flex-shrink: 0;
+}
+.timeline-item:nth-child(2) .timeline-dot { background: var(--accent2); }
+.timeline-item:nth-child(3) .timeline-dot { background: var(--accent3); }
+.timeline-item:nth-child(4) .timeline-dot { background: #F39C12; }
+.timeline-item:nth-child(5) .timeline-dot { background: #9B59B6; }
+.timeline-content { flex: 1; }
+.timeline-step { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
+.timeline-content h3 { font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+.timeline-content p { font-size: 14px; color: var(--muted); margin: 0; }
+
+/* FINDINGS */
+.findings-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 40px; }
+.finding-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 28px;
+  position: relative; overflow: hidden;
+}
+.finding-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 3px; background: linear-gradient(90deg, var(--accent), transparent);
+}
+.finding-card:nth-child(2)::before { background: linear-gradient(90deg, var(--accent2), transparent); }
+.finding-card:nth-child(3)::before { background: linear-gradient(90deg, var(--accent3), transparent); }
+.finding-card:nth-child(4)::before { background: linear-gradient(90deg, #F39C12, transparent); }
+.finding-card:nth-child(5)::before { background: linear-gradient(90deg, #9B59B6, transparent); }
+.finding-card:nth-child(6)::before { background: linear-gradient(90deg, #E74C3C, transparent); }
+.finding-num {
+  font-family: var(--heading-font);
+  font-size: 42px; color: var(--accent); opacity: 0.3;
+  position: absolute; top: 16px; right: 20px;
+}
+.finding-card:nth-child(2) .finding-num { color: var(--accent2); }
+.finding-card:nth-child(3) .finding-num { color: var(--accent3); }
+.finding-card h3 { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+.finding-card p { font-size: 13px; color: var(--muted); margin: 0; }
+
+/* TOOLS */
+.tools-grid { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+.tool-badge {
+  background: var(--card); border: 1px solid var(--border);
+  padding: 8px 18px; border-radius: 100px;
+  font-size: 13px; font-weight: 500; color: var(--text);
+  transition: all 0.2s;
+}
+.tool-badge:hover { border-color: var(--accent); color: var(--accent); }
+
+/* IMPACT */
+.impact-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 40px; }
+.impact-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 32px; text-align: center;
+}
+.impact-icon { font-size: 32px; margin-bottom: 12px; }
+.impact-card h3 { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+.impact-card p { font-size: 13px; color: var(--muted); margin: 0; }
+
+/* DIVIDER */
+.divider { height: 1px; background: var(--border); margin: 0 60px; }
+
+/* FOOTER */
+.footer {
+  padding: 60px;
+  display: flex; justify-content: space-between; align-items: center;
+  border-top: 1px solid var(--border);
+}
+.footer-left h3 { font-family: var(--heading-font); font-size: 28px; margin-bottom: 8px; }
+.footer-left p { color: var(--muted); font-size: 14px; }
+.footer-links { display: flex; gap: 16px; }
+.footer-link {
+  padding: 10px 24px; border-radius: 100px;
+  font-size: 13px; font-weight: 600; text-decoration: none;
+  transition: all 0.2s;
+}
+.footer-link.primary { background: var(--accent); color: var(--bg); }
+.footer-link.secondary { border: 1px solid var(--border); color: var(--text); }
+.footer-link:hover { transform: translateY(-2px); opacity: 0.9; }
+
+/* ANIMATIONS */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.reveal {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .hero { padding: 60px 24px; }
+  .stat-bar { grid-template-columns: repeat(2,1fr); padding: 32px 24px; }
+  .section { padding: 60px 24px; }
+  .problem-grid, .findings-grid, .impact-grid { grid-template-columns: 1fr; }
+  .footer { flex-direction: column; gap: 24px; padding: 40px 24px; text-align: center; }
+  .footer-links { justify-content: center; }
+  .divider { margin: 0 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-tag">Case Study 01</div>
+  <h1>Chicago Crime <em>Data Analysis</em> & Dashboard</h1>
+  <p class="hero-sub">A full-scale analytical investigation of 8.5 million crime records spanning 25 years — uncovering patterns, hotspots, and actionable insights for public safety strategy.</p>
+  <div class="hero-meta">
+    <div class="meta-item">
+      <span class="meta-label">Timeline</span>
+      <span class="meta-value">2026</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Domain</span>
+      <span class="meta-value">Public Safety Analytics</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Role</span>
+      <span class="meta-value">Data & Business Analyst</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Dataset</span>
+      <span class="meta-value">City of Chicago Open Data</span>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    Scroll to read
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stat-bar">
+  <div class="stat"><span class="stat-num">8.5M+</span><span class="stat-label">Crime Records</span></div>
+  <div class="stat"><span class="stat-num">25</span><span class="stat-label">Years of Data</span></div>
+  <div class="stat"><span class="stat-num">77</span><span class="stat-label">Community Areas</span></div>
+  <div class="stat"><span class="stat-num">40+</span><span class="stat-label">Visualizations</span></div>
+  <div class="stat"><span class="stat-num">10</span><span class="stat-label">Analysis Steps</span></div>
+</div>
+
+<!-- PROBLEM -->
+<section class="section reveal">
+  <span class="section-tag">01 — The Problem</span>
+  <h2>What questions needed answering?</h2>
+  <p>Chicago has one of the most comprehensive public crime datasets in the world. But raw data alone tells no story. The challenge was to transform 8.5 million records into clear, actionable intelligence for multiple stakeholder types.</p>
+  <div class="problem-grid">
+    <div class="problem-card">
+      <div class="problem-icon">🏙️</div>
+      <h3>Where do crimes cluster?</h3>
+      <p>Which community areas and districts carry the heaviest crime burden, and where are resources most needed?</p>
+    </div>
+    <div class="problem-card">
+      <div class="problem-icon">🕐</div>
+      <h3>When do crimes peak?</h3>
+      <p>What hours, days, and months see the most criminal activity — and how should patrols be deployed accordingly?</p>
+    </div>
+    <div class="problem-card">
+      <div class="problem-icon">📉</div>
+      <h3>Has crime improved over time?</h3>
+      <p>How have crime rates and arrest rates trended across 25 years, and what role did key events like COVID play?</p>
+    </div>
+    <div class="problem-card">
+      <div class="problem-icon">🏪</div>
+      <h3>What does this mean for businesses?</h3>
+      <p>Which hours and locations are safest for retail operations, and how can businesses mitigate crime-related risk?</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- APPROACH -->
+<section class="section reveal">
+  <span class="section-tag">02 — The Approach</span>
+  <h2>A 10-step analytical pipeline</h2>
+  <p>Rather than jumping to conclusions, I built a systematic pipeline that moved from raw data ingestion all the way to stakeholder-ready deliverables.</p>
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-content">
+        <div class="timeline-step">Step 1–2</div>
+        <h3>EDA & Data Cleaning</h3>
+        <p>Loaded 8.5M rows, standardized column names, handled 1.7M missing values using median/mode/flag strategies, removed duplicates, and capped outliers using IQR method. Converted all data types correctly including datetime, boolean, and numeric fields.</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-content">
+        <div class="timeline-step">Step 3–4</div>
+        <h3>Trend Analysis & Geo Heatmaps</h3>
+        <p>Built 6 time-series charts showing 25-year crime trends. Created 4 interactive Folium heatmaps showing crime density, crime type distribution, arrest vs non-arrest locations, and domestic crime hotspots across Chicago.</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-content">
+        <div class="timeline-step">Step 5–6</div>
+        <h3>Resource Deployment & Business Safety</h3>
+        <p>Built a District × Hour heatmap grid to identify patrol deployment needs. Analyzed business-relevant crime types to identify safest operating hours, riskiest days, and most targeted location types for retail businesses.</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-content">
+        <div class="timeline-step">Step 7–9</div>
+        <h3>Policy Impact & Risk Index</h3>
+        <p>Compared crime before and after 5 key milestones including the 2008 financial crisis and COVID-19. Built a weighted composite neighborhood risk index scoring all 77 community areas across 5 dimensions for real estate and insurance applications.</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-content">
+        <div class="timeline-step">Step 10</div>
+        <h3>Dashboard & PDF Report</h3>
+        <p>Deployed an interactive Plotly Dash web dashboard with real-time year and crime type filters, 6 live charts, and an interactive Chicago map. Generated an automated 5-page PDF stakeholder report with business recommendations.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FINDINGS -->
+<section class="section reveal">
+  <span class="section-tag">03 — Key Findings</span>
+  <h2>What the data revealed</h2>
+  <p>After analyzing 8.5 million records, six findings stood out as having the most strategic significance.</p>
+  <div class="findings-grid">
+    <div class="finding-card">
+      <span class="finding-num">01</span>
+      <h3>Crime peaked in 2001, dropped 40%+</h3>
+      <p>The city saw its highest crime volume in 2001. By 2025, consistent year-over-year declines brought totals to historic lows — a major public safety success story.</p>
+    </div>
+    <div class="finding-card">
+      <span class="finding-num">02</span>
+      <h3>Only 25% of crimes lead to arrest</h3>
+      <p>Despite 8.5M reported crimes, just 1 in 4 results in an arrest. District-level analysis revealed significant performance gaps, with some districts achieving 35%+ while others fell below 15%.</p>
+    </div>
+    <div class="finding-card">
+      <span class="finding-num">03</span>
+      <h3>Noon is the peak crime hour</h3>
+      <p>Contrary to assumptions, 12:00 noon sees the most criminal activity — not late night. This has direct implications for patrol scheduling and business security planning.</p>
+    </div>
+    <div class="finding-card">
+      <span class="finding-num">04</span>
+      <h3>Theft dominates at 21% of all crimes</h3>
+      <p>Theft is by far the most common crime type, followed by battery and criminal damage. These three categories alone account for over 50% of all reported crimes.</p>
+    </div>
+    <div class="finding-card">
+      <span class="finding-num">05</span>
+      <h3>COVID caused a measurable crime drop</h3>
+      <p>2020 saw one of the sharpest single-year declines in crime volume, directly attributable to pandemic lockdowns reducing opportunity for street and retail crime.</p>
+    </div>
+    <div class="finding-card">
+      <span class="finding-num">06</span>
+      <h3>17% of crimes are domestic</h3>
+      <p>Nearly 1 in 5 crimes is classified as domestic — presenting a significant opportunity for targeted public awareness campaigns and support service marketing.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TOOLS -->
+<section class="section reveal">
+  <span class="section-tag">04 — Tools & Technologies</span>
+  <h2>Built with a full analytics stack</h2>
+  <p>Every tool was chosen deliberately — Python for processing scale, Folium for geo intelligence, Plotly Dash for interactivity, and Tableau for business communication.</p>
+  <div class="tools-grid">
+    <span class="tool-badge">Python</span>
+    <span class="tool-badge">Pandas</span>
+    <span class="tool-badge">NumPy</span>
+    <span class="tool-badge">Matplotlib</span>
+    <span class="tool-badge">Seaborn</span>
+    <span class="tool-badge">Plotly</span>
+    <span class="tool-badge">Plotly Dash</span>
+    <span class="tool-badge">Folium</span>
+    <span class="tool-badge">Tableau</span>
+    <span class="tool-badge">Scipy</span>
+    <span class="tool-badge">ReportLab</span>
+    <span class="tool-badge">GitHub</span>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- IMPACT -->
+<section class="section reveal">
+  <span class="section-tag">05 — Business Impact</span>
+  <h2>What this enables</h2>
+  <div class="impact-grid">
+    <div class="impact-card">
+      <div class="impact-icon">🚔</div>
+      <h3>Smarter Patrol Deployment</h3>
+      <p>District × Hour heatmap enables data-driven scheduling — putting officers where and when they're most needed.</p>
+    </div>
+    <div class="impact-card">
+      <div class="impact-icon">🏠</div>
+      <h3>Real Estate Risk Scoring</h3>
+      <p>Neighborhood risk index provides buyers, developers, and insurers with a data-backed safety score for all 77 areas.</p>
+    </div>
+    <div class="impact-card">
+      <div class="impact-icon">🛒</div>
+      <h3>Retail Business Planning</h3>
+      <p>Hour-by-hour risk analysis helps retailers optimize operating hours and security investment based on actual crime patterns.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-left">
+    <h3>Devarshi Patel</h3>
+    <p>MS Business Analytics · Roosevelt University · Chicago</p>
+    <p style="margin-top:4px; font-size:13px;">Devarshipatel535@gmail.com</p>
+  </div>
+  <div class="footer-links">
+    <a href="https://github.com/devpatel7757/chicago_crime_analysis" target="_blank" class="footer-link primary">View on GitHub</a>
+    <a href="index.html" class="footer-link secondary">← Back to Portfolio</a>
+  </div>
+</footer>
+
+<script>
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+reveals.forEach(r => observer.observe(r));
+</script>
+</body>
+</html>

@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Case Study — AI Startup Ecosystem | Devarshi Patel</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Libre+Baskerville:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080810;
+  --surface: #0F0F1A;
+  --card: #141422;
+  --border: #1E1E32;
+  --accent: #7C3AED;
+  --accent-light: #A855F7;
+  --accent2: #06B6D4;
+  --accent3: #10B981;
+  --gold: #F59E0B;
+  --text: #E2E8F0;
+  --muted: #94A3B8;
+  --heading-font: 'Libre Baskerville', serif;
+  --body-font: 'Space Grotesk', sans-serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: var(--body-font); line-height: 1.7; overflow-x: hidden; }
+
+/* GRID BG */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(124,58,237,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124,58,237,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none; z-index: 0;
+}
+
+/* HERO */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 100px 80px;
+  position: relative;
+  background: radial-gradient(ellipse at 30% 40%, rgba(124,58,237,0.15) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 80%, rgba(6,182,212,0.08) 0%, transparent 50%);
+}
+.case-tag {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--accent-light);
+  margin-bottom: 32px;
+  display: flex; align-items: center; gap: 14px;
+  animation: slideIn 0.7s ease both;
+}
+.case-tag::before {
+  content: '03';
+  width: 36px; height: 36px; border-radius: 8px;
+  background: rgba(124,58,237,0.2); border: 1px solid rgba(124,58,237,0.4);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; color: var(--accent-light);
+}
+.hero h1 {
+  font-family: var(--heading-font);
+  font-size: clamp(38px, 5.5vw, 68px);
+  line-height: 1.1; color: var(--text); max-width: 850px;
+  animation: slideIn 0.7s 0.1s ease both;
+}
+.hero h1 em { color: var(--accent-light); font-style: italic; }
+.hero-p {
+  font-size: 17px; color: var(--muted); max-width: 600px;
+  margin-top: 28px;
+  animation: slideIn 0.7s 0.2s ease both;
+}
+.hero-pills {
+  display: flex; gap: 10px; flex-wrap: wrap; margin-top: 40px;
+  animation: slideIn 0.7s 0.3s ease both;
+}
+.pill {
+  padding: 7px 16px; border-radius: 6px;
+  font-size: 12px; font-weight: 600;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--muted);
+}
+.pill.highlight {
+  background: rgba(124,58,237,0.15);
+  border-color: rgba(124,58,237,0.4);
+  color: var(--accent-light);
+}
+
+/* STATS STRIP */
+.stats-strip {
+  display: grid; grid-template-columns: repeat(4,1fr);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.stat-block {
+  padding: 44px 40px;
+  border-right: 1px solid var(--border);
+  position: relative;
+}
+.stat-block:last-child { border-right: none; }
+.stat-block::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+}
+.stat-block:nth-child(2)::before { background: linear-gradient(90deg, var(--accent2), transparent); }
+.stat-block:nth-child(3)::before { background: linear-gradient(90deg, var(--accent3), transparent); }
+.stat-block:nth-child(4)::before { background: linear-gradient(90deg, var(--gold), transparent); }
+.stat-big {
+  font-family: var(--heading-font);
+  font-size: 48px; color: var(--accent-light);
+  display: block; line-height: 1;
+}
+.stat-block:nth-child(2) .stat-big { color: var(--accent2); }
+.stat-block:nth-child(3) .stat-big { color: var(--accent3); }
+.stat-block:nth-child(4) .stat-big { color: var(--gold); }
+.stat-desc { font-size: 13px; color: var(--muted); margin-top: 10px; }
+
+/* CONTENT */
+.wrap { max-width: 1100px; margin: 0 auto; padding: 0 80px; }
+.sec { padding: 80px 0; }
+.sec-label {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--accent-light); margin-bottom: 20px;
+}
+.sec-label::after { content:''; width: 32px; height: 1px; background: var(--accent); }
+.sec h2 {
+  font-family: var(--heading-font);
+  font-size: clamp(26px, 3.5vw, 40px);
+  color: var(--text); margin-bottom: 20px; line-height: 1.2;
+}
+.sec p { color: var(--muted); font-size: 16px; max-width: 680px; margin-bottom: 16px; }
+
+/* HUB CARDS */
+.hub-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 36px; }
+.hub-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 28px;
+  transition: all 0.3s;
+  position: relative; overflow: hidden;
+}
+.hub-card::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(124,58,237,0.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+.hub-card:hover { border-color: rgba(124,58,237,0.5); transform: translateY(-4px); }
+.hub-rank {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: var(--accent-light);
+  margin-bottom: 14px;
+}
+.hub-card:nth-child(2) .hub-rank { background: rgba(6,182,212,0.15); border-color: rgba(6,182,212,0.3); color: var(--accent2); }
+.hub-card:nth-child(3) .hub-rank { background: rgba(16,185,129,0.15); border-color: rgba(16,185,129,0.3); color: var(--accent3); }
+.hub-name { font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+.hub-stats { font-size: 13px; color: var(--muted); }
+.hub-stats span { color: var(--text); font-weight: 600; }
+
+/* SECTOR TABLE */
+.sector-list { margin-top: 36px; display: flex; flex-direction: column; gap: 12px; }
+.sector-item {
+  display: flex; align-items: center; gap: 16px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 10px; padding: 16px 20px;
+}
+.sector-name { font-size: 14px; font-weight: 600; min-width: 180px; }
+.sector-bar-wrap { flex: 1; background: rgba(255,255,255,0.05); border-radius: 100px; height: 6px; }
+.sector-bar { height: 6px; border-radius: 100px; background: linear-gradient(90deg, var(--accent), var(--accent-light)); }
+.sector-item:nth-child(2) .sector-bar { background: linear-gradient(90deg, var(--accent2), #67E8F9); }
+.sector-item:nth-child(3) .sector-bar { background: linear-gradient(90deg, var(--accent3), #6EE7B7); }
+.sector-item:nth-child(4) .sector-bar { background: linear-gradient(90deg, var(--gold), #FCD34D); }
+.sector-item:nth-child(5) .sector-bar { background: linear-gradient(90deg, #F87171, #FCA5A5); }
+.sector-val { font-size: 13px; font-weight: 600; color: var(--text); min-width: 60px; text-align: right; }
+
+/* FINDINGS CARDS */
+.findings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 36px; }
+.finding {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 28px; display: flex; gap: 16px;
+}
+.finding-emoji { font-size: 28px; flex-shrink: 0; line-height: 1.2; }
+.finding h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; color: var(--text); }
+.finding p { font-size: 13px; color: var(--muted); margin: 0; }
+
+/* TOOLS */
+.tools-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+.t { padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 500;
+  background: var(--card); border: 1px solid var(--border); color: var(--muted);
+  transition: all 0.2s; }
+.t:hover { border-color: var(--accent); color: var(--accent-light); }
+
+/* FOOTER */
+.footer-band {
+  background: var(--surface); border-top: 1px solid var(--border);
+  padding: 60px 80px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.footer-band h3 { font-family: var(--heading-font); font-size: 24px; margin-bottom: 6px; }
+.footer-band p { color: var(--muted); font-size: 14px; }
+.footer-btns { display: flex; gap: 12px; }
+.fbtn { padding: 11px 26px; border-radius: 8px; font-size: 13px; font-weight: 600; text-decoration: none; transition: all 0.2s; font-family: var(--body-font); cursor: pointer; }
+.fbtn-primary { background: var(--accent); color: white; border: none; }
+.fbtn-outline { border: 1px solid var(--border); color: var(--text); background: none; }
+.fbtn:hover { transform: translateY(-2px); opacity: 0.9; }
+
+.hr { height: 1px; background: var(--border); }
+
+@keyframes slideIn { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+.reveal { opacity:0; transform:translateY(28px); transition: opacity 0.6s, transform 0.6s; }
+.reveal.visible { opacity:1; transform:translateY(0); }
+
+@media(max-width:768px) {
+  .hero,.wrap,.footer-band { padding-left:24px; padding-right:24px; }
+  .hero { padding-top:60px; }
+  .stats-strip { grid-template-columns:1fr 1fr; }
+  .hub-grid,.findings-grid { grid-template-columns:1fr; }
+  .footer-band { flex-direction:column; gap:24px; }
+}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="case-tag">Case Study</div>
+  <h1>AI / Data Startup <em>Ecosystem</em> Analysis</h1>
+  <p class="hero-p">A global investigation of 497 AI and data startups — mapping funding patterns, geographic concentration, industry focus, and the team-size-to-funding correlation across 20+ startup hubs worldwide.</p>
+  <div class="hero-pills">
+    <span class="pill highlight">R · ggplot2</span>
+    <span class="pill highlight">Data Visualization</span>
+    <span class="pill">497 Startups</span>
+    <span class="pill">20+ Global Hubs</span>
+    <span class="pill">AngelList Dataset</span>
+    <span class="pill">2026</span>
+  </div>
+</section>
+
+<div class="stats-strip">
+  <div class="stat-block"><span class="stat-big">497</span><span class="stat-desc">Global AI/Data Startups Analyzed</span></div>
+  <div class="stat-block"><span class="stat-big">20+</span><span class="stat-desc">Startup Hubs Mapped</span></div>
+  <div class="stat-block"><span class="stat-big">3</span><span class="stat-desc">Top-Funded Sectors Identified</span></div>
+  <div class="stat-block"><span class="stat-big">R</span><span class="stat-desc">End-to-End Pipeline Language</span></div>
+</div>
+
+<div class="wrap">
+
+  <section class="sec reveal">
+    <div class="sec-label">01 Objective</div>
+    <h2>Mapping the global AI startup landscape</h2>
+    <p>The AI and data startup ecosystem is expanding rapidly but unevenly. Investors, founders, and analysts need to understand where capital is concentrating, which sectors are drawing the most funding, and what structural factors (like team size) predict startup success.</p>
+    <p>This project used AngelList data on 497 global startups to answer those questions systematically — using R for the complete data pipeline from cleaning to visualization.</p>
+  </section>
+
+  <div class="hr"></div>
+
+  <section class="sec reveal">
+    <div class="sec-label">02 Top Startup Hubs</div>
+    <h2>Three cities dominate the global AI landscape</h2>
+    <p>After parsing geographic data and aggregating by city, a clear hierarchy emerged across the 20+ startup hubs in the dataset.</p>
+    <div class="hub-grid">
+      <div class="hub-card">
+        <div class="hub-rank">#1</div>
+        <div class="hub-name">San Francisco</div>
+        <div class="hub-stats"><span>~42%</span> of all startups · Highest avg funding · Dense VC network · AI-first culture</div>
+      </div>
+      <div class="hub-card">
+        <div class="hub-rank">#2</div>
+        <div class="hub-name">London</div>
+        <div class="hub-stats"><span>~14%</span> of startups · Strong FinTech + AI crossover · European HQ preference</div>
+      </div>
+      <div class="hub-card">
+        <div class="hub-rank">#3</div>
+        <div class="hub-name">Bangalore</div>
+        <div class="hub-stats"><span>~11%</span> of startups · Fastest growth trajectory · Engineering talent advantage</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="hr"></div>
+
+  <section class="sec reveal">
+    <div class="sec-label">03 Sector Funding Distribution</div>
+    <h2>FinTech, Healthcare, and Robotics lead the pack</h2>
+    <p>Funding was not evenly distributed across sectors. Three verticals captured a disproportionate share of total investment, while newer sectors showed strong growth momentum.</p>
+    <div class="sector-list">
+      <div class="sector-item">
+        <span class="sector-name">🏦 FinTech AI</span>
+        <div class="sector-bar-wrap"><div class="sector-bar" style="width:88%"></div></div>
+        <span class="sector-val">Highest</span>
+      </div>
+      <div class="sector-item">
+        <span class="sector-name">🏥 Healthcare AI</span>
+        <div class="sector-bar-wrap"><div class="sector-bar" style="width:74%"></div></div>
+        <span class="sector-val">2nd</span>
+      </div>
+      <div class="sector-item">
+        <span class="sector-name">🤖 Robotics</span>
+        <div class="sector-bar-wrap"><div class="sector-bar" style="width:61%"></div></div>
+        <span class="sector-val">3rd</span>
+      </div>
+      <div class="sector-item">
+        <span class="sector-name">📊 Data Analytics</span>
+        <div class="sector-bar-wrap"><div class="sector-bar" style="width:48%"></div></div>
+        <span class="sector-val">4th</span>
+      </div>
+      <div class="sector-item">
+        <span class="sector-name">🛡️ Cybersecurity AI</span>
+        <div class="sector-bar-wrap"><div class="sector-bar" style="width:35%"></div></div>
+        <span class="sector-val">5th</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="hr"></div>
+
+  <section class="sec reveal">
+    <div class="sec-label">04 Key Findings</div>
+    <h2>What the data revealed about the ecosystem</h2>
+    <div class="findings-grid">
+      <div class="finding">
+        <span class="finding-emoji">📈</span>
+        <div>
+          <h3>Team size strongly predicts funding</h3>
+          <p>A strong positive correlation was found between team size and total funding raised — startups with 10+ employees received disproportionately larger investment rounds.</p>
+        </div>
+      </div>
+      <div class="finding">
+        <span class="finding-emoji">🌍</span>
+        <div>
+          <h3>Berlin and Bangalore are emerging fast</h3>
+          <p>While SF dominates overall, Berlin (Europe) and Bangalore (Asia) showed the fastest growth rates in new startup formation and funding inflows over the analysis period.</p>
+        </div>
+      </div>
+      <div class="finding">
+        <span class="finding-emoji">💰</span>
+        <div>
+          <h3>FinTech commands premium valuations</h3>
+          <p>AI-powered FinTech startups commanded the highest average funding rounds — approximately 2.4× the dataset average — driven by regulatory tailwinds and large addressable markets.</p>
+        </div>
+      </div>
+      <div class="finding">
+        <span class="finding-emoji">🔬</span>
+        <div>
+          <h3>Healthcare AI is the fastest-growing sector</h3>
+          <p>Though currently ranked 2nd in total funding, Healthcare AI showed the steepest growth curve — suggesting it may overtake FinTech as the dominant sector within 3–5 years.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="hr"></div>
+
+  <section class="sec reveal">
+    <div class="sec-label">05 Methodology</div>
+    <h2>The R analytics pipeline</h2>
+    <p>The entire analysis was built end-to-end in R — from raw data ingestion through cleaning, feature engineering, and publication-ready visualizations using ggplot2.</p>
+    <p>Key pipeline steps included: parsing funding values from mixed-format strings (e.g. "$2.5M", "$500K"), standardizing employee range fields into numeric midpoints, geocoding startup locations, and building multi-layer ggplot2 charts with custom themes for each visualization.</p>
+    <div class="tools-row">
+      <span class="t">R</span>
+      <span class="t">ggplot2</span>
+      <span class="t">dplyr</span>
+      <span class="t">tidyr</span>
+      <span class="t">stringr</span>
+      <span class="t">readr</span>
+      <span class="t">AngelList Data</span>
+      <span class="t">Correlation Analysis</span>
+      <span class="t">Geographic Mapping</span>
+    </div>
+  </section>
+
+</div>
+
+<footer class="footer-band">
+  <div>
+    <h3>Devarshi Patel</h3>
+    <p>MS Business Analytics · Roosevelt University · Chicago</p>
+    <p style="margin-top:4px;font-size:13px;color:#64748B;">Devarshipatel535@gmail.com</p>
+  </div>
+  <div class="footer-btns">
+    <a href="index.html" class="fbtn fbtn-outline">← Back to Portfolio</a>
+  </div>
+</footer>
+
+<script>
+const obs = new IntersectionObserver(e => e.forEach(x => { if(x.isIntersecting) x.target.classList.add('visible'); }), {threshold:0.1});
+document.querySelectorAll('.reveal').forEach(r => obs.observe(r));
+</script>
+</body>
+</html>
